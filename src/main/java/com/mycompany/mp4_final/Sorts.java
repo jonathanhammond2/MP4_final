@@ -11,6 +11,12 @@ package com.mycompany.mp4_final;
 public class Sorts {
     
     //Useful methods for use in sorting algorithms
+
+    /*
+    This class proved very useful for the mini project, allowing us to 
+    easily test out the sorting algorithms and ensure that they worked 
+    before we implemented them in the event handlers of AlgTab
+    */
     
     /**
      * Swap two integer elements in an array
@@ -151,7 +157,19 @@ public class Sorts {
         }
     }
     
-    public static void mergeSort(int[] a, int first, int last) {
+    //Bubble sort: compare each element in the array with the next element,
+    //Then swap if they are out of order
+    //After each iteration of the outer loop, thhe largest number floats to the 
+    //end of the array, much like bubbles float to the top of a pot of water
+    public static void bubbleSort(int[] a, int first, int last) {
+        for (int i = 0; i < a.length; i++) {
+
+            for (int j = 0; j < last - i; j++) {
+                if (a[j] > a[j + 1]) {
+                    swapElements(a, j , j + 1);
+                }
+            }
+        }
         
     }
 }
