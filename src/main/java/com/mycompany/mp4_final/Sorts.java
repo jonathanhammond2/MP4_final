@@ -166,7 +166,7 @@ public class Sorts {
 
             for (int j = 0; j < last - i; j++) {
                 if (a[j] > a[j + 1]) {
-                    //swapElements(a, j , j + 1);
+                    swapElements(a, j , j + 1);
                 }
             }
         }
