@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
  *
  * @author abw04
  */
+//Design the layout and functionality of each tab
 public class AlgTab extends Tab{
     private Random rand = new Random();
     private TextField[] inputFields;
@@ -38,21 +39,23 @@ public class AlgTab extends Tab{
     //the constructor will require a sorting algorithm as an argument
     //the algorithm choices are represented by the enum Algorithms
     public static enum Algorithms { 
-        selection, insertion, quick, merge
+        selection, insertion, quick, bubble
     }
     
-    
+    //constructor
     public AlgTab(int numFields, String title, Algorithms alg) {
         super(title);
         this.numFields = numFields;
         
+        //instantiate user input receivers
         inputFields = new TextField[numFields];
         randButton = new Button("Random Numbers");
-        stepButton = new Button("Show Next Step");
+        stepButton = new Button("Show Sort Steps");
         resetButton = new Button("Reset Data");
         
         
         randButton.setOnAction(this::processRandomButton);
+        resetButton.setOnAction(this::processResetButton);
         
         //decide which event handler to use depending on which algorithm is
         //selected in the constructor
@@ -66,15 +69,15 @@ public class AlgTab extends Tab{
             case quick:
                 stepButton.setOnAction(this::processQuickStepButton);
                 break;
-            case merge:
-                stepButton.setOnAction(this::processMergeStepButton);
+            case bubble:
+                stepButton.setOnAction(this::processBubbleStepButton);
                 break;
             default:
                 stepButton.setOnAction(this::processSelectionStepButton);
         }
         
         
-        
+        //Layout will consist of a BorderPane layered over with HBoxes and VBoxes
         HBox fieldBox = new HBox();
         HBox buttonBox = new HBox();
         tabContent = new BorderPane();
@@ -90,9 +93,6 @@ public class AlgTab extends Tab{
         buttonBox.getChildren().add(stepButton);
         buttonBox.getChildren().add(resetButton);
         
-        //FIXME: ARRANGE TEXT OBJECTS IN A VBOX TO DISPLAY
-        //EACH STEP IN THE PROCESS
-        
         
         
         tabContent.setTop(fieldBox);
@@ -104,7 +104,9 @@ public class AlgTab extends Tab{
     
     
     
-    
+    //Method to swap elements in the quick sort event handler
+    //adds a description of the swap to a Text object
+    //which will later be displayed to show the steps
     private void quickSortSwapElements(int[] a, int i, int  j) {
         int temp = a[i];
         a[i] = a[j];
@@ -112,6 +114,8 @@ public class AlgTab extends Tab{
         quickText.add(new Text("Swapping indices [" + i + "," + j + "] " + Arrays.toString(userData)));
     }
     
+    //A variation of selection sort which updates the list of Text objects
+    //to keep track of the sorting steps 
     private void quickSortEnd(int[] a, int first, int last) {
         for (int i = first; i < last; i++) {
             int minValue = a[i];
@@ -131,9 +135,11 @@ public class AlgTab extends Tab{
             
             
         }
-        System.out.println(Arrays.toString(a));
     }
 
+    //recursive quickSort method that has access to the 
+    //encapsulated list of Text objects and will
+    //update that list every time elements are swapped
     private void quickSortWorks(int[] a, int first, int last) {
 
         // Only do quicksort for more than three elements
@@ -149,8 +155,7 @@ public class AlgTab extends Tab{
             if (a[first] > a[mid]) {
                 quickSortSwapElements(a, first, mid);
             }
-//            System.out.println(first + " " + last + " " + mid);
-//            System.out.println(Arrays.toString(a));
+            
             // Move the pivot to the end
             quickSortSwapElements(a, mid, last - 1);
             int pivotValue = a[last - 1];
@@ -191,56 +196,7 @@ public class AlgTab extends Tab{
         }
     }
     
-    private void quickSortPrint(int[] a, int first, int last) {
-        if (last - first > 3) {
-            int mid = first + (last - first) / 2;
-            
-            if (a[first] > a[mid]) {
-                quickSortSwapElements(a, first, mid);
-            }
-            if (a[mid] > a[last - 1]) {
-                quickSortSwapElements(a, mid, last);
-            }
-            if (a[first] > a[mid]) {
-                quickSortSwapElements(a, first, mid);
-            }
-            
-            quickSortSwapElements(a, mid, last - 1);
-            int pivotValue = a[last - 1];
-            
-            int indexFromLeft = first + 1;
-            int indexFromRight = last - 2;
-            boolean done = false;
-            
-            while (!done) {
-                while (a[indexFromLeft] < pivotValue) {
-                    indexFromLeft++;
-                }
-                while (a[indexFromRight] > pivotValue) {
-                    indexFromRight--;
-                }
-                if (indexFromLeft < indexFromRight) {
-                    quickSortSwapElements(a, indexFromLeft, indexFromRight);
-                    indexFromLeft++;
-                    indexFromRight--;
-                } else {
-                    done = true;
-                }
-                
-            }
-            
-            quickSortSwapElements(a, last - 1, indexFromLeft);
-            
-            quickSortPrint(a, first, indexFromLeft);
-            quickSortPrint(a, indexFromLeft + 1, last);
-            
-            
-        } else {
-            quickSortEnd(a, first, last+1);
-        }
-        
-        System.out.println(Arrays.toString(a));
-    }
+    
     
     //Generate random data in the TextFields
     private void processRandomButton(ActionEvent e) {
@@ -252,6 +208,9 @@ public class AlgTab extends Tab{
     //Event handlers for each sorting algorithm
     //Which event handler is used will depend on which
     //sorting algorithm is selected in the constructor
+
+    //Selection sort handler: runs a selection sort on the data
+    //and uses an array of Text objects to track changes in the array
     private void processSelectionStepButton(ActionEvent e) {
         userData = new int[numFields];
         outputDisplay = new Text[numFields];
@@ -263,15 +222,7 @@ public class AlgTab extends Tab{
         }
         //Array of text objects to hold the updated userData array
         //after each step
-        
-        
-        
-        
-        
-        
-//        System.out.println(Arrays.toString(userData));
-//        
-//        Sorts.selectionSort(userData, 0, numFields);
+
         for (int i = 0; i < numFields; i++) {
             int minValue = userData[i];
             int minValIndex = i;
@@ -294,20 +245,11 @@ public class AlgTab extends Tab{
         }
         System.out.println(Arrays.toString(userData));
         
-//        outputDisplay = new Text[numFields];
-//        for (int i = 0; i < numFields; i++) {
-//            outputDisplay[i] = new Text(Arrays.toString(userData));
-//        }
-        
-        //System.out.println(Arrays.toString(outputDisplay));
-        
-//        for (int i = 0; i < numFields; i++) {
-//            inputFields[i].setText(Integer.toString(userData[i]));
-//        }
-        
         tabContent.setBottom(outputBox);
     }
     
+    //Insertion event handler: runs an insertion sort on the data
+    //and uses an array of Text objects to track changes in the array
     private void processInsertionStepButton(ActionEvent e) {
         userData = new int[numFields];
         outputDisplay = new Text[numFields];
@@ -322,7 +264,6 @@ public class AlgTab extends Tab{
             int next = userData[i];
             
             int fillIndex = i - 1;
-            int initialFillIndex = i - 1;
             while (fillIndex >= 0 && next < userData[fillIndex]) {
                 userData[fillIndex + 1] = userData[fillIndex];
                 fillIndex--;
@@ -343,6 +284,9 @@ public class AlgTab extends Tab{
         tabContent.setBottom(outputBox);
     }
     
+    //quick sort event handler
+    //uses the above-defined quickSortWorks() method to run a quickSort on the 
+    //data and keep track of changes to the array
     private void processQuickStepButton(ActionEvent e) {
         userData = new int[numFields];
         outputBox = new VBox();
@@ -365,8 +309,47 @@ public class AlgTab extends Tab{
         
     }
     
-    private void processMergeStepButton(ActionEvent e) {
-        
+    //bubble sort event handler: runs a bubble sort on the data and 
+    //keeps track of changes to the array
+    private void processBubbleStepButton(ActionEvent e) {
+        userData = new int[numFields];
+        outputDisplay = new Text[numFields];
+        outputBox = new VBox();
+
+        for (int i = 0; i < numFields; i++) {
+            userData[i] = Integer.parseInt(inputFields[i].getText());
+            
+        }
+
+        for (int i = 0; i < userData.length; i++) {
+
+            for (int j = 0; j < userData.length - (i + 1); j++) {
+                if (userData[j] > userData[j + 1]) {
+                    Sorts.swapElements(userData, j , j + 1);
+                    quickText.add(new Text("Swapping indices [" + j + ", " + (j + 1) + "]" + Arrays.toString(userData)));
+                    
+                }
+
+            }
+
+            
+        }
+
+        for (int i = 0; i < quickText.size(); i++) {
+            outputBox.getChildren().add(quickText.get(i));
+        }
+
+        tabContent.setBottom(outputBox);
+    }
+
+    //clears the TextFields and the log of array changes
+    //so that the user can start fresh with new data
+    private void processResetButton(ActionEvent e) {
+        for (int i = 0; i < numFields; i++) {
+            inputFields[i].clear();
+        }
+
+        outputBox.getChildren().clear();
     }
     
 }
